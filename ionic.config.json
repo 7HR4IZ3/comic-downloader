@@ -1,0 +1,7 @@
+{
+  "name": "comic-downloader",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}

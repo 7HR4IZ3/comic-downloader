@@ -1,0 +1,11 @@
+{
+  "appId": "com.gamerxville.comicdownloader",
+  "appName": "comic-downloader",
+  "bundledWebRuntime": false,
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}
