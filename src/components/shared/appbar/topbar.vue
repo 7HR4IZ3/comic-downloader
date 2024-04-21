@@ -8,11 +8,6 @@
 
     <v-spacer></v-spacer>
 
-    <template v-if="$vuetify.display.mdAndUp">
-      <v-btn icon="mdi-magnify" variant="text"></v-btn>
-      <v-btn icon="mdi-filter" variant="text"></v-btn>
-    </template>
-
     <v-btn
       variant="text"
       icon="mdi-dots-vertical"

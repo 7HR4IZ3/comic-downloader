@@ -19,7 +19,8 @@ import '@mdi/font/css/materialdesignicons.css';
 const pinia = createPinia();
 const vuetify = createVuetify({
   blueprint, directives,
-  components: { ...components, VFab }
+  components: { ...components, VFab },
+  theme: { defaultTheme: 'dark' }
 });
 
 createApp(App)

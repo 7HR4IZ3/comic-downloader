@@ -31,7 +31,7 @@
         { text: 'Recent', icon: 'mdi-history', location: "recents" },
         { text: 'Favourites', icon: 'mdi-star', location: "favourites" },
         { text: 'Offline', icon: 'mdi-check-circle', location: "downloads" },
-        { text: 'Settings', icon: 'mdi-wrench', location: "settings" }
+        { text: 'Settings', icon: 'mdi-cog', location: "settings" }
       ],
     }),
 
