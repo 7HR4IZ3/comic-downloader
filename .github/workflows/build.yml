@@ -27,8 +27,8 @@ jobs:
       - name: Install NPM Dependencies
         run: yarn install
 
-      - name: Add Android Platform
-        run: npx cap add android
+      # - name: Add Android Platform
+      #   run: npx cap add android
 
       # - name: Add IOS Platform
       #   run: npx cap add ios
@@ -40,7 +40,7 @@ jobs:
         run: npx cap sync
 
       - name: Build Android
-        run: "cd android; ./gradlew :app:assembleDebug; cd .."
+        run: "cd android; chmod +x ./gradlew; ./gradlew :app:assembleDebug; cd .."
 
       # - name: Build Android
       #   run: npx cap build android
