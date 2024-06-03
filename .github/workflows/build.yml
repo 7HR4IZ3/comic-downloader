@@ -46,19 +46,19 @@ jobs:
       #   run: npx cap build android
 
       - name: Upload Debug APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: comic-downloader.apk
           path: ./android/app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Upload Release Bundle
-        uses: actions/upload-artifact@v3
-        with:
-          name: comic-downloader.aab
-          path: ./android/app/build/outputs/bundle/release/app-release.aab
+      # - name: Upload Release Bundle
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: comic-downloader.aab
+      #     path: ./android/app/build/outputs/bundle/release/app-release.aab
 
-      - name: ZIP Project
-        run: zip comic.zip comic-downloader.apk comic-downloader.aab
+      # - name: ZIP Project
+      #   run: zip comic.zip comic-downloader.apk comic-downloader.aab
 
       - name: Create Release
         id: create_release
@@ -78,6 +78,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./comic.zip
-          asset_name: comic.zip
+          asset_path: ./android/app/build/outputs/apk/debug/app-debug.apk
+          asset_name: comic-downloader.apk
           asset_content_type: application/zip
