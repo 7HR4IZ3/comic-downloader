@@ -1,14 +1,12 @@
 <template>
   <v-navigation-drawer temporary v-model="drawer">
     <v-list
-      :lines="false"
       density="compact"
       nav
     >
       <v-list-item
         v-for="(item, i) in items"
-        :key="i"
-        :value="item"
+        :key="i" :value="item"
         color="primary"
         @click="setLocation(item.location)"
         :active="isActiveRoute(item)"
@@ -23,14 +21,19 @@
   </v-navigation-drawer>
 </template>
 
+<style scoped>
+.v-navigation-drawer .v-list-item {
+  color: inherit !important;
+}
+</style>
+
 <script>
   export default {
     data: () => ({
       items: [
-        { text: 'My Files', icon: 'mdi-folder', location: "homepage" },
-        { text: 'Recent', icon: 'mdi-history', location: "recents" },
+        { text: 'Comics', icon: 'mdi-folder', location: "homepage" },
+        { text: 'Downloads', icon: 'mdi-check-circle', location: "downloads" },
         { text: 'Favourites', icon: 'mdi-star', location: "favourites" },
-        { text: 'Offline', icon: 'mdi-check-circle', location: "downloads" },
         { text: 'Settings', icon: 'mdi-cog', location: "settings" }
       ],
     }),
@@ -41,8 +44,9 @@
         return route.name === location;
       },
       setLocation(location) {
-        if (location)
+        if (location) {
           this.$router.push({ name: location });
+        }
       }
     }
   }

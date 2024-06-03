@@ -1,30 +1,17 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import { createVuetify } from 'vuetify'
+import { createApp } from "vue";
+import { createPinia } from "pinia";
 
-import { router } from "./router/index.ts"
-import { md3 as blueprint } from 'vuetify/blueprints'
+import App from "./App.vue";
+import setup from "./setup/index.ts";
+import { router } from "./router/index.ts";
 
-import App from './App.vue'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
-
-import { VFab } from 'vuetify/labs/VFab'
-
-import 'vuetify/styles';
-import './css/style.css';
-import '@mdi/font/css/materialdesignicons.css';
-
+import "vuetify/styles";
+import "./css/style.css";
+import "@mdi/font/css/materialdesignicons.css";
 
 const pinia = createPinia();
-const vuetify = createVuetify({
-  blueprint, directives,
-  components: { ...components, VFab },
-  theme: { defaultTheme: 'dark' }
-});
 
-createApp(App)
-  .use(pinia)
-  .use(router)
-  .use(vuetify)
-  .mount('#app');
+const app = createApp(App)
+  .use(pinia).use(router)
+
+setup(app).then(() => app.mount("#app"));

@@ -1,6 +1,6 @@
 {
-  "name": "App",
-  "short_name": "App",
+  "name": "Comic Downloader",
+  "short_name": "Comic Downlaoder",
   "start_url": "/",
   "display": "standalone",
   "icons": [{

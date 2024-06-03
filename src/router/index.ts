@@ -1,19 +1,45 @@
-import { createMemoryHistory, createRouter } from 'vue-router'
-
-import HomeView from './routes/homepage.vue'
-import RecentView from "./routes/recents.vue"
-import DownloadView from "./routes/downloads.vue"
-import FavouriteView from "./routes/favourites.vue"
-import SettingsView from "./routes/settings.vue"
-
-const routes = [
-  { path: '/', component: HomeView, name: "homepage" },
-  { path: '/recents', component: RecentView, name: "recents" },
-  { path: '/downloads', component: DownloadView, name: "downloads" },
-  { path: '/favourites', component: FavouriteView, name: "favourites" },
-  { path: '/settings', component: SettingsView, name: "settings" },
-]
+import {
+  // createMemoryHistory,
+  // createWebHashHistory,
+  createWebHistory,
+  createRouter
+} from "vue-router";
+import CreateView from "./subroutes/create.vue";
 
 export const router = createRouter({
-  routes, history: createMemoryHistory(),
-})
+  history: createWebHistory(),
+  routes: [
+    {
+      path: "/",
+      name: "homepage",
+      component: () => import("./routes/homepage.vue")
+    },
+    {
+      path: "/downloads",
+      name: "downloads",
+      component: () => import("./routes/downloads.vue")
+    },
+    {
+      path: "/favourites",
+      name: "favourites",
+      component: () => import("./routes/favourites.vue")
+    },
+    {
+      path: "/settings",
+      name: "settings",
+      component: () => import("./routes/settings.vue")
+    },
+
+    {
+      meta: { subroute: true },
+      path: "/viewer", name: "viewer",
+      component: () => import("./subroutes/viewer.vue")
+    },
+    {
+      path: "/create",
+      name: "create",
+      meta: { subroute: true },
+      component: CreateView
+    }
+  ]
+});

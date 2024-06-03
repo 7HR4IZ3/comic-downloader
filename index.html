@@ -1,13 +1,40 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + Vue</title>
+
+    <script src="/eruda.js"></script>
+    <script>eruda.init();</script>
+
+    <style>
+      .pre-loader {
+        display: flex;
+        position: fixed;
+        top: 0; left: 0;
+        align-items: center;
+        background-color: #fff;
+        justify-content: center;
+        height: 100%; width: 100%;
+      }
+
+      .pre-loader img {
+        height: 20%;
+      }
+    </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div class="pre-loader">
+        <img
+          alt="loading"
+          src="loading2.gif"
+          class="loading-gif"
+        />
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

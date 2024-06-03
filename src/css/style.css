@@ -1,0 +1,14 @@
+
+body {
+  background-color: rgb(var(--v-theme-background));
+}
+
+#app {
+  height: 100vh;
+}
+
+/* header.v-toolbar {
+  margin: .3rem 5%;
+  border-radius: 1.3rem;
+  width: 90% !important;
+} */
