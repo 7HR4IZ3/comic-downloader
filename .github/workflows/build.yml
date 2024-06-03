@@ -1,0 +1,83 @@
+name: Build Application
+
+on: ["workflow_dispatch"]
+
+jobs:
+  build:
+    name: Build APP
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '17'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install yarn
+        run: npm install -g yarn
+
+      - name: Install NPM Dependencies
+        run: yarn install
+
+      - name: Add Android Platform
+        run: npx cap add android
+
+      # - name: Add IOS Platform
+      #   run: npx cap add ios
+
+      - name: Build Web Project
+        run: yarn build
+
+      - name: Sync Dependencies
+        run: npx cap sync
+
+      - name: Build Android
+        run: "cd android; ./gradlew :app:assembleDebug; cd .."
+
+      # - name: Build Android
+      #   run: npx cap build android
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: comic-downloader.apk
+          path: ./android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload Release Bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: comic-downloader.aab
+          path: ./android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: ZIP Project
+        run: zip comic.zip comic-downloader.apk comic-downloader.aab
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./comic.zip
+          asset_name: comic.zip
+          asset_content_type: application/zip
