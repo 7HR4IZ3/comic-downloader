@@ -30,6 +30,7 @@
           v-if="comics.length"
           :comics="comics"
           @reload="reloadComics"
+          @delete="deleteComic"
         ></comic-list>
         <template v-else>
           <v-col cols="12" style="margin-top: 6rem;">
@@ -79,6 +80,7 @@
 
 <script>
   import { ref } from "vue";
+  import { Dialog } from '@capacitor/dialog';
   import { Directory } from "@capacitor/filesystem/dist/esm";
   
   import { debounce } from "../../utils";
@@ -118,21 +120,24 @@
       subscriptions.push(revertMenu);
 
       return {
-        comicCount: 0, loading: true, filter: "", showSearch: false,
-        filterComics, comics: cache.get("comics") || new Array(),
+        showSearch: false, filterComics,
+        comicCount: 0, loading: true, filter: "",
+        comics: cache.get("comics") || state.comics
       }
     },
     async created() {
       if (!this.comics.length) {
         let comics = cache.get("comics");
+
         if (!comics?.length) {
           comics = await this.loadComics()
         }
 
         cache.set("comics", comics);
-        this.comics = [ ...comics ];
+        state.comics = this.comics = comics;
+        state.save();
       }
-  
+
       this.loading = false;
     },
     methods: {
@@ -189,16 +194,14 @@
               thumbnail: { uri: images[0].uri },
               folder: {
                 uri: folder.uri, name: folder.name
-              }, uri: child.uri, name: child.name,
-              icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWRIdwnecwYr8xUYyCUlTpJl37vwxedrOVf_ZUgr3Isw&s"
+              }, uri: child.uri, name: child.name
             };
             entries.push(entry);
           } else {
             const entry = {
-              index: this.comicCount++,
-              shown: true, thumbnail: { uri: child.uri },
-              folder: null, uri: folder.uri, name: folder.name,
-              icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWRIdwnecwYr8xUYyCUlTpJl37vwxedrOVf_ZUgr3Isw&s"
+              uri: folder.uri, name: folder.name,
+              index: this.comicCount++, shown: true,
+              thumbnail: { uri: child.uri }, folder: null,
             };
             entries.push(entry);
             break;
@@ -211,11 +214,38 @@
         // this.loading = true;
 
         const comics = await this.loadComics();
+
         cache.set("comics", comics);
+        state.comics = this.comics = comics;
+        state.save();
+
         this.applyFilters();
 
         // this.loading = false;
         done(true);
+      },
+      async deleteComic(comic) {
+        const folder = comic.folder ? `${comic.folder.name} ` : "";
+        const { value: confirmed } = await Dialog.confirm({
+          title: 'Confirm', message:
+            `Delete "${folder}${comic.name}"?`
+        });
+    
+        if (confirmed) {
+          await fs.rmdir({
+            path: comic.uri,
+            recursive: true
+          });
+
+          const comics = state.comics.filter(
+            item => (item !== comic)
+          );
+
+          state.comics = this.comics = comics;
+          cache.set("comics", comics); state.save();
+
+          this.applyFilters();
+        }
       }
     },
     unmounted() {

@@ -40,7 +40,7 @@
               :icon="app.fab.icon || 'mdi-plus'"
             ></v-fab>
           </template>
-  
+
           <v-btn
             v-for="(action, index) in app.fab.actions"
             :icon="action.icon" :key="index"

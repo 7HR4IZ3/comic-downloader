@@ -1,6 +1,6 @@
 {
-  "appId": "com.gamerxville.comicdownloader_debug",
-  "appName": "Comic Downloader Debug",
+  "appId": "com.gamerxville.comicdownloader",
+  "appName": "Comic Downloader",
   "webDir": "dist",
   "plugins": {
     "SplashScreen": {

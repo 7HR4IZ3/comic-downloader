@@ -1,6 +1,6 @@
 <template>
   <v-fade-transition>
-    <v-app-bar v-show="app.showAppBar" color="primary" prominent height="70">
+    <v-app-bar v-show="app.showAppBar" prominent height="70">
       <template v-if="app.actionStack.length <= 0">
         <v-app-bar-nav-icon
           variant="text"

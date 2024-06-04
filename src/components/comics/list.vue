@@ -6,7 +6,8 @@
     <v-card v-for="item in comics" class="mb-2" rounded="lg" border>
       <comic-list-item
         :chapter="item"
-        @delete="$delete(item)"
+        :hideDelete="hideDelete"
+        @delete="emit('delete', item)"
       ></comic-list-item>
     </v-card>
   </v-pull-to-refresh>
@@ -33,30 +34,12 @@
 </style>
 
 <script setup>
-  import { Dialog } from '@capacitor/dialog';
-
   import { useState } from '../../stores/state';
   import { fs } from "../../workers/filesystem";
 
   import ComicListItem from "./list-item.vue";
 
   const state = useState();
-  const { comics } = defineProps(['comics']);
-  const emit = defineEmits(["reload", "bookmark"]);
-
-  const $delete = async (comic) => {
-    const folder = comic.folder ? `${comic.folder.name} ` : "";
-    const { value: confirmed } = await Dialog.confirm({
-      title: 'Confirm', message:
-        `Delete "${folder}${comic.name}"?`
-    });
-
-    if (confirmed) {
-      await fs.rmdir({
-        path: comic.uri,
-        recursive: true
-      });
-      emit("reload");
-    }
-  };
+  const { comics, hideDelete } = defineProps(['comics', 'hideDelete']);
+  const emit = defineEmits(["reload", "bookmark", "delete"]);
 </script>

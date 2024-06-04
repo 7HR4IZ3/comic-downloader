@@ -7,8 +7,8 @@ body {
   height: 100vh;
 }
 
-/* header.v-toolbar {
-  margin: .3rem 5%;
+header.v-toolbar {
+  margin: .5rem 8%;
   border-radius: 1.3rem;
-  width: 90% !important;
-} */
+  width: 84% !important;
+}

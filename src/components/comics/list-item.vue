@@ -37,6 +37,7 @@
         ></v-btn>
 
         <v-btn
+          v-if="!!!hideDelete"
           color="medium-emphasis"
           icon="mdi-delete" size="small"
           @click.stop="emit('delete')"
@@ -82,8 +83,8 @@
   const thumbnail = ref("");
   const bookmarked = ref(false);
 
-  const { chapter } = defineProps(['chapter']);
   const emit = defineEmits(['delete', 'share', 'bookmark']);
+  const { chapter, hideDelete } = defineProps(['chapter', 'hideDelete']);
 
   function viewer() {
     cache.set("active-comic", chapter);

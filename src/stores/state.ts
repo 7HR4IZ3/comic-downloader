@@ -2,6 +2,13 @@
 import { Directory, Filesystem, Encoding } from "@capacitor/filesystem";
 import { defineStore } from "pinia";
 
+export type Comic = {
+  index: number; shown: boolean;
+  name: string; uri: string;
+  thumbnail: { uri: string };
+  folder: null | { uri: string, name: string };
+};
+
 export type Bookmark = {
   uri: string; name: string;
   thumbnail: { uri: string };
@@ -10,12 +17,18 @@ export type Bookmark = {
 };
 
 export type State = {
+  comics: Comic[];
+  imageMargin: string;
   bookmarks: Bookmark[];
 };
 
-export const useState = defineStore("state", {
+export const useState = window["useState"] = defineStore("state", {
   state(): State {
-    return { bookmarks: [] };
+    return {
+      imageMargin: "1px",
+      bookmarks: [],
+      comics: []
+    };
   },
   actions: {
     addBookmark(bookmark: Bookmark) {
@@ -51,7 +64,7 @@ export const useState = defineStore("state", {
     },
 
     $load(saved: State): void {
-      console.log(saved);
+      this.comics = [ ...saved.comics ];
       this.bookmarks = [ ...saved.bookmarks ];
     },
 
@@ -72,10 +85,9 @@ export const useState = defineStore("state", {
 
     async save(): Promise<void> {
       const state = {
-        bookmarks: this.bookmarks
+        bookmarks: this.bookmarks,
+        comics: this.comics
       };
-
-      console.log(state);
 
       await Filesystem.writeFile({
         path: "state.json",

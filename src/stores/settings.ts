@@ -13,15 +13,18 @@ export type UIPositions = {
 
 export type AppSettings = {
   directory: string;
-  theme: "light" | "dark" | "system";
   positions: UIPositions;
+  scan: "always" | "cache";
+  theme: "light" | "dark" | "system";
   configs: { [key: string]: ScraperConfig };
 };
 
 export const useSettings = defineStore("settings", {
   state(): AppSettings {
     return {
-      theme: "system", directory: "Manga",
+      scan: "cache",
+      theme: "system",
+      directory: "Manga",
       positions: { sidebar: "left" },
       configs: {
         "*": {

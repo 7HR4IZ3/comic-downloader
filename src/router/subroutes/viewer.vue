@@ -33,7 +33,11 @@
 
   <v-bottom-sheet v-model="showContext">
     <v-list class="bottom-bar">
-      <v-list-item v-for="item in contextMenu" :prepend-icon="item.icon">
+      <v-list-item
+        v-for="item in contextMenu"
+        
+        :prepend-icon="item.icon"
+      >
         <v-divider v-if="item.divider"></v-divider>
         <v-list-item-title v-if="item.title">
           {{ item.title }}
@@ -77,7 +81,7 @@ export default {
     bookmarked: false,
     showContext: false,
     loading: true, image: null,
-    imageMargin: "1px",
+    imageMargin: state.imageMargin || "1px",
     contextMenu: [
       { title: "Export", icon: "mdi-share" },
       {
@@ -97,9 +101,14 @@ export default {
 
     app.setFab({
       icon: "mdi-arrow-right",
-      shown: true, action: () => {
-        const comics = cache.get("comics");
-        if (comics?.length) { this.loadComic(comics[0]) }
+      shown: computed(() => {
+        return state.comics?.length >= 1
+      }), action: () => {
+        const comics = state.comics;
+        if (comics?.length) {
+          this.loadComic(comics[0]);
+          this.initialize();
+        }
       }
     });
     app.setHeader("Comic Viewer");
@@ -141,169 +150,176 @@ export default {
       return app.pushAction({ execute: () => this.$router.back() });
     }
 
-    app.setFab({
-      icon: "mdi-dots-vertical",
-      shown: true,
-      actions: [
-        {
-          icon: "mdi-chevron-up",
-          onclick: () => {
-            document
-              .querySelector("#topRef")
-              ?.scrollIntoView({ behavior: "smooth" });
-          },
-        },
-        {
-          icon: "mdi-share",
-          onclick: () => {},
-        },
-        {
-          icon: computed(() => (
-            this.bookmarked ?
-              'mdi-star-minus': 'mdi-star-plus'
-          )),
-          onclick: () => this.bookmark()
-        },
-        {
-          icon: "mdi-arrow-left-bold",
-          active: computed(() => {
-            const comic = cache.get("active-comic");
-            if (comic) return comic.index != 0;
-          }),
-          onclick: () => {
-            const comics = cache.get("comics") || [];
-            const comic = cache.get("active-comic");
-            const previous = comics[comic.index - 1];
-            if (previous && previous !== comic)
-              this.loadComic(previous);
-          },
-        },
-        {
-          icon: "mdi-arrow-right-bold",
-          active: computed(() => {
-            const comics = cache.get("comics") || [];
-            const comic = cache.get("active-comic");
-            if (comic) return comic.index < comics.length;
-          }),
-          onclick: () => {
-            const comics = cache.get("comics") || [];
-            const comic = cache.get("active-comic");
-            const next = comics[comic.index + 1];
-            if (next && next !== comic)
-              this.loadComic(next);
-          },
-        },
-      ],
-    });
-
-    const revertMenu = app.setMenu({
-      onclick: () => app.toggleDrawer(true),
-      shown: true, icon: "mdi-dots-vertical",
-      items: [
-        {
-          id: "navigator",
-          icon: "mdi-image",
-          title: "Images Navigator",
-        },
-        {
-          title: "Bookmark",
-          icon: computed(() => (
-            this.bookmarked ?
-              'mdi-star-minus': 'mdi-star-plus'
-          )),
-          onclick: () => this.bookmark()
-        },
-        {
-          items: [
-            {
-              id: "increase-margin",
-              title: "Increase",
-              icon: "mdi-pencil-plus",
-              onclick: () => {
-                const margin = parseFloat(
-                  this.imageMargin.substring(
-                    0, this.imageMargin.length - 2
-                  )
-                );
-                if (margin <= 20) {
-                  this.imageMargin = `${margin + 1}px`;
-                }
-              },
-            },
-            {
-              id: "decrease-margin",
-              title: "Decrease",
-              aicon: "mdi-pencil-minus",
-              onclick: () => {
-                const margin = parseFloat(
-                  this.imageMargin.substring(
-                    0, this.imageMargin.length - 2
-                  )
-                );
-                if (margin >= 1) {
-                  this.imageMargin = `${margin - 1}px`;
-                }
-              },
-            },
-          ],
-        },
-        { divider: true },
-        {
-          items: [
-            {
-              id: "prev-chapter",
-              title: "Previous Chapter",
-              icon: "mdi-arrow-left-bold",
-              active: computed(() => {
-                const comic = cache.get("active-comic");
-                if (comic) return comic.index != 0;
-              }),
-              onclick: () => {
-                const comics = cache.get("comics") || [];
-                const comic = cache.get("active-comic");
-                const previous = comics[comic.index - 1];
-                if (previous && previous !== comic)
-                  this.loadComic(previous);
-              },
-            },
-            {
-              id: "next-chapter",
-              title: "Next Chapter",
-              aicon: "mdi-arrow-right-bold",
-              active: computed(() => {
-                const comics = cache.get("comics") || [];
-                const comic = cache.get("active-comic");
-                if (comic) return comic.index < comics.length;
-              }),
-              onclick: () => {
-                const comics = cache.get("comics") || [];
-                const comic = cache.get("active-comic");
-                const next = comics[comic.index + 1];
-                if (next && next !== comic)
-                  this.loadComic(next);
-              },
-            },
-          ],
-        },
-      ],
-      images: this.images.map((img) => ({
-        img,
-        onclick: () => {
-          const e = document.querySelector(`.v-img[filename="${img.title}"]`);
-          setTimeout(() => e?.scrollIntoView({ behavior: "smooth" }));
-        },
-      })),
-    });
-
-    app.pushAction({
-      execute: () => {
-        app.layout.marginTop = "70px";
-        revertMenu(); this.$router.back();
-      },
-    });
+    this.initialize();
   },
 
   methods: {
+    initialize() {
+      app.setFab({
+        icon: "mdi-menu",
+        shown: true,
+        actions: [
+          {
+            icon: "mdi-chevron-up",
+            onclick: () => {
+              document
+                .querySelector("#topRef")
+                ?.scrollIntoView({ behavior: "smooth" });
+            },
+          },
+          {
+            icon: "mdi-share",
+            onclick: () => {},
+          },
+          {
+            icon: computed(() => (
+              this.bookmarked ?
+                'mdi-star-minus': 'mdi-star-plus'
+            )),
+            onclick: () => this.bookmark()
+          },
+          {
+            icon: "mdi-arrow-left-bold",
+            /* inactive: computed(() => {
+              const comic = cache.get("active-comic");
+              if (comic) return comic.index === 0;
+            }), */
+            onclick: () => {
+              const comics = cache.get("comics") || state.comics;
+              const comic = cache.get("active-comic");
+              const previous = comics[comic.index - 1];
+              if (previous && previous !== comic)
+                this.loadComic(previous);
+            },
+          },
+          {
+            icon: "mdi-arrow-right-bold",
+            /* inactive: computed(() => {
+              const comics = cache.get("comics") || state.comics;
+              const comic = cache.get("active-comic");
+              if (comic) return comic.index >= comics.length - 1;
+            }), */
+            onclick: () => {
+              const comics = cache.get("comics") || state.comics;
+              const comic = cache.get("active-comic");
+              const next = comics[comic.index + 1];
+              if (next && next !== comic)
+                this.loadComic(next);
+            },
+          },
+        ],
+      });
+  
+      const revertMenu = app.setMenu({
+        onclick: () => app.toggleDrawer(true),
+        shown: true, icon: "mdi-dots-vertical",
+        items: [
+          {
+            id: "navigator",
+            icon: "mdi-image",
+            title: "Images Navigator",
+          },
+          {
+            title: "Bookmark",
+            icon: computed(() => (
+              this.bookmarked ?
+                'mdi-star-minus': 'mdi-star-plus'
+            )),
+            onclick: () => this.bookmark()
+          },
+          {
+            items: [
+              {
+                id: "increase-margin",
+                title: "Increase",
+                icon: "mdi-pencil-plus",
+                onclick: () => {
+                  const margin = parseFloat(
+                    this.imageMargin.substring(
+                      0, this.imageMargin.length - 2
+                    )
+                  );
+                  if (margin <= 20) {
+                    state.imageMargin =
+                      this.imageMargin = `${margin + 1}px`;
+                    state.save();
+                  }
+                },
+              },
+              {
+                id: "decrease-margin",
+                title: "Decrease",
+                aicon: "mdi-pencil-minus",
+                onclick: () => {
+                  const margin = parseFloat(
+                    this.imageMargin.substring(
+                      0, this.imageMargin.length - 2
+                    )
+                  );
+                  if (margin >= 1) {
+                    state.imageMargin =
+                      this.imageMargin = `${margin - 1}px`;
+                    state.save();
+                  }
+                },
+              },
+            ],
+          },
+          { divider: true },
+          {
+            items: [
+              {
+                id: "prev-chapter",
+                title: "Previous Chapter",
+                icon: "mdi-arrow-left-bold",
+                /* inactive: computed(() => {
+                  const comic = cache.get("active-comic");
+                  if (comic) return comic.index === 0;
+                }), */
+                onclick: () => {
+                  const comics = cache.get("comics") || state.comics;
+                  const comic = cache.get("active-comic");
+                  const previous = comics[comic.index - 1];
+                  if (previous && previous !== comic)
+                    this.loadComic(previous);
+                },
+              },
+              {
+                id: "next-chapter",
+                title: "Next Chapter",
+                aicon: "mdi-arrow-right-bold",
+                /* inactive: computed(() => {
+                  const comics = cache.get("comics") || state.comics;
+                  const comic = cache.get("active-comic");
+                  if (comic) return comic.index >= comics.length - 1;
+                }), */
+                onclick: () => {
+                  const comics = cache.get("comics") || state.comics;
+                  const comic = cache.get("active-comic");
+                  const next = comics[comic.index + 1];
+                  if (next && next !== comic)
+                    this.loadComic(next);
+                },
+              },
+            ],
+          },
+        ],
+        images: this.images.map((img) => ({
+          img,
+          onclick: () => {
+            const e = document.querySelector(`.v-img[filename="${img.title}"]`);
+            setTimeout(() => e?.scrollIntoView({ behavior: "smooth" }));
+          },
+        })),
+      });
+  
+      app.pushAction({
+        execute: () => {
+          app.layout.marginTop = "70px";
+          revertMenu(); this.$router.back();
+        },
+      });
+    },
     bookmark() {
       const comic = cache.get("active-comic");
       if (!comic) return;

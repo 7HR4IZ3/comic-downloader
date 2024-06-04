@@ -7,7 +7,7 @@ export default {
     "surface-light": "#424242",
     "surface-variant": "#a3a3a3",
     "on-surface-variant": "#424242",
-    primary: "#2f3439",
+    primary: "#191f26",
     "primary-darken-1": "#277CC1",
     secondary: "#eaedf0",
     "secondary-darken-1": "#48A9A6",

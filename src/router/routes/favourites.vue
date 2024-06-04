@@ -5,6 +5,7 @@
         v-if="comics.length"
         :comics="comics"
         @reload="reloadComics"
+        :hideDelete="true"
       ></comic-list>
 
       <template v-else>

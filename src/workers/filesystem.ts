@@ -45,7 +45,7 @@ import { fsCache } from "../stores/cache";
 // };
 
 async function readFile(options: ReadFileOptions, force: boolean=false) {
-  let value, key = options.path;
+  let value, key = decodeURIComponent(options.path);
   if (!force) {
     if (fsCache.has(key)) { return fsCache.get(key) }
   }
@@ -61,7 +61,7 @@ async function readFile(options: ReadFileOptions, force: boolean=false) {
 }
 
 async function readFileAsURL(options: ReadFileOptions, force: boolean=false) {
-  let value, key = options.path;
+  let value, key = decodeURIComponent(options.path);
   if (!force) {
     if (fsCache.has(key)) { return fsCache.get(key) }
   }
